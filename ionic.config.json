@@ -1,0 +1,12 @@
+{
+  "name": "SayCheese",
+  "app_id": "fc356c54",
+  "v2": true,
+  "typescript": true,
+  "proxies": [
+    {
+      "path": "/url",
+      "proxyUrl": "http://findoctor.esy.es/findoctor"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+page-new-project {
+  .middle-v {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .swiper-pagination-bullet
+  {
+    width: 10%;
+    background: url("../../assets/buttonBG.png");
+    background-repeat: repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+  }
+}
