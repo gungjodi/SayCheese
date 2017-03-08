@@ -3,7 +3,6 @@ import {NavController, NavParams, LoadingController, AlertController} from 'ioni
 import {FormBuilder, Validators} from "@angular/forms";
 import {AuthData} from "../../providers/auth-data";
 import {EmailValidator} from "../../validators/email";
-import {MyAccountPage} from "../../pages/my-account/my-account";
 import { IDetailedError } from '@ionic/cloud-angular';
 /*
   Generated class for the CreateAccount page.
@@ -30,6 +29,27 @@ export class CreateAccountPage {
         });
     }
 
+    doLogin()
+    {
+        this.authData.loginUser(this.registerForm.value.email, this.registerForm.value.email)
+            .then( authData => {
+                this.authData.loginEvent();
+            },(error)=>{
+                this.loading.dismiss().then( () => {
+                    let alert = this.alertCtrl.create({
+                        title:'Failed',
+                        subTitle:"Failed to Login",
+                        buttons:['OK']
+                    });
+                    alert.present();
+                });
+            });
+        this.loading = this.loadingCtrl.create({
+            dismissOnPageChange: true,
+        });
+        this.loading.present();
+    }
+
     doCreateAccount()
     {
         if (!this.registerForm.valid){
@@ -45,24 +65,7 @@ export class CreateAccountPage {
                         buttons:[{
                             text:'OK',
                             handler:()=>{
-                                console.log("LOGIN NOW");
-                                this.authData.loginUser(this.registerForm.value.email, this.registerForm.value.password)
-                                    .then( authData => {
-                                        this.authData.updateName(this.registerForm.value.name);
-                                    },(error)=>{
-                                        this.loading.dismiss().then( () => {
-                                            let alert = this.alertCtrl.create({
-                                                title:'Failed',
-                                                subTitle:"Failed to Login",
-                                                buttons:['OK']
-                                            });
-                                            alert.present();
-                                        });
-                                    });
-                                this.loading = this.loadingCtrl.create({
-                                    dismissOnPageChange: true,
-                                });
-                                this.loading.present();
+                                this.doLogin()
                             }
                         }]
                     });

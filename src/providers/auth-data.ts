@@ -42,7 +42,7 @@ export class AuthData {
     }
 
     signUp(name:string,email: string, password: string) {
-        return this.auth.signup({'email':email, 'password':password});
+        return this.auth.signup({'name':name,'email':email, 'password':password});
     }
 
     updateName(name:string)
