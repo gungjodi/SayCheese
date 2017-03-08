@@ -9,33 +9,51 @@ import { Auth, User } from '@ionic/cloud-angular';
 */
 @Injectable()
 export class AuthData {
-    public authData:any;
-    constructor(public auth: Auth, public user: User,public events: Events) {
-        if (this.auth.isAuthenticated()) {
-            this.authData = {loggedIn:true,data:user.details};
-        }
-        else
-        {
-            this.authData = {loggedIn:false,data:''};
-        }
+    constructor(public auth: Auth, public user: User,public events: Events) {}
+
+    getLoginStatus()
+    {
+        return this.auth.isAuthenticated();
+    }
+
+    loginEvent()
+    {
+        this.events.publish('user:login');
+    }
+
+    registeredEvent()
+    {
+        this.events.publish('user:registered');
+    }
+
+    getAuthData()
+    {
+        return this.user.details;
     }
 
     loginUser(newEmail: any, newPassword: any)
     {
-        this.authData = {loggedIn:true,data:this.user.details};
-        this.events.publish('user:login');
         return this.auth.login('basic',{email: newEmail, password: newPassword});
     }
 
     logout() {
-        this.authData = {loggedIn:false,data:''};
-        this.events.publish('user:logout');
         this.auth.logout();
+        this.events.publish('user:logout');
     }
 
-    signUp(email: string, password: string) {
+    signUp(name:string,email: string, password: string) {
         return this.auth.signup({'email':email, 'password':password});
     }
 
+    updateName(name:string)
+    {
+        this.user.details.name=name;
+        this.user.save();
+        this.user.load().then(()=>{
+            this.events.publish('user:updated');
+        },(err)=>{
+            console.log(err);
+        });
+    }
 
 }

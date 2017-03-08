@@ -9,7 +9,7 @@
     <ion-list class="item transp" no-lines>
       <ion-item class="item item-content">
         <ion-avatar item-left><img src="../assets/images/image3.jpg" style="width: 85px;height: 85px;"></ion-avatar>
-        <br>
+        {{userData.name}}<br>
       </ion-item>
     </ion-list>
     <ion-list class="item item-content">
@@ -21,8 +21,6 @@
       </button>
     </ion-list>
   </ion-content>
-
 </ion-menu>
-
 <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
 <ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>

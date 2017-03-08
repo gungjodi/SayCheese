@@ -1,8 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import {Nav, Platform, Events} from 'ionic-angular';
 import { StatusBar, Splashscreen } from 'ionic-native';
-import { Page1 } from '../pages/page1/page1';
-import { Page2 } from '../pages/page2/page2';
+import { MyAccountPage } from '../pages/my-account/my-account';
 import { NewProjectPage } from '../pages/new-project/new-project';
 import {AuthData} from '../providers/auth-data';
 
@@ -11,22 +10,18 @@ import {AuthData} from '../providers/auth-data';
 })
 export class MyApp {
     @ViewChild(Nav) nav: Nav;
-    rootPage: any=Page1;
+    rootPage: any=MyAccountPage;
     pages: Array<{title: string, component: any}>;
     public userData:any;
-    public loggedIn:boolean=false;
 
     constructor(public platform: Platform,public auth:AuthData,public events:Events) {
         this.initialize();
-        // used for an example of ngFor and navigation
         this.pages = [
-          { title: 'My Account', component: Page1 },
-          { title: 'Page Two', component: Page2 },
+          { title: 'My Account', component: MyAccountPage },
           { title: 'New Project', component: NewProjectPage}
         ];
-
-
         this.listenToLoginEvents();
+        this.updateData();
     }
 
     initialize() {
@@ -39,7 +34,14 @@ export class MyApp {
     }
 
     openPage(page) {
-      this.nav.setRoot(page.component);
+        if(this.auth.getLoginStatus())
+        {
+            this.nav.setRoot(page.component);
+        }
+        else
+        {
+            this.rootPage=MyAccountPage;
+        }
     }
 
     logout()
@@ -49,33 +51,35 @@ export class MyApp {
 
     listenToLoginEvents() {
         this.events.subscribe('user:login', () => {
-            console.log("LOGGEDIN")
+            console.log("LOGGEDIN EVENT")
             this.updateData()
         });
 
-        this.events.subscribe('user:signup', () => {
-            console.log("SIGNUP")
+        this.events.subscribe('user:registered', () => {
+            console.log("REGISTERED EVENT")
+        });
+
+        this.events.subscribe('user:updated', () => {
+            console.log("UPDATED EVENT")
             this.updateData()
         });
 
         this.events.subscribe('user:logout', () => {
-            console.log("LOGGEDOUT")
+            console.log("LOGGEDOUT EVENT")
             this.updateData()
         });
     }
 
     updateData()
     {
-        if(this.auth.authData.loggedIn)
+        if(this.auth.getLoginStatus())
         {
             this.rootPage=NewProjectPage;
-            this.userData=this.auth.authData.data;
-            this.loggedIn=true;
         }
         else
         {
-            this.rootPage=Page1;
-            this.userData={name:''};
+            this.rootPage=MyAccountPage;
         }
+        this.userData = this.auth.getAuthData();
     }
 }

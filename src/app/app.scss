@@ -62,15 +62,60 @@ ion-header .toolbar-background
   color: color($colors,lightwhite);
 }
 
+.alert-button
+{
+  color: black !important;
+}
+
+.bar-button
+{
+  color: color($colors,lightwhite);
+}
+
 .btn-custom{
   background: url("../assets/buttonBG.png");
   background-repeat: repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
+  color:#fff;
 }
 
 .toolbar-title
 {
   color: white;
+}
+
+page-login,page-create-account{
+  form {
+    margin-bottom: 32px;
+    button {
+      margin-top: 20px;
+    }
+  }
+
+  p {
+    font-size: 0.8em;
+    color: #000;
+  }
+
+  ion-label {
+    margin-left: 5px;
+  }
+
+  ion-item.item{
+    padding-left: 0px;
+  }
+
+  ion-input {
+    padding: 5px;
+  }
+
+  .invalid {
+    border-bottom: 1px solid #FF6153;
+  }
+
+  .error-message .item-inner {
+    border-bottom: 0 !important;
+  }
 }
