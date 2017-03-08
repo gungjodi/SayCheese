@@ -3,8 +3,6 @@ import { NavController, LoadingController, AlertController } from 'ionic-angular
 import { FormBuilder, Validators } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
 import { AuthData } from '../../providers/auth-data';
-import { Events } from 'ionic-angular';
-import { NewProjectPage } from '../new-project/new-project';
 import { CreateAccountPage } from '../create-account/create-account';
 
 /*
@@ -53,6 +51,7 @@ export class LoginPage {
             this.loading = this.loadingCtrl.create({
                 dismissOnPageChange: true,
             });
+
             this.loading.present();
         }
 

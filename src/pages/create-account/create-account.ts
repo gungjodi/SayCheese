@@ -23,7 +23,7 @@ export class CreateAccountPage {
                 public loadingCtrl: LoadingController,public authData:AuthData)
     {
         this.registerForm = formBuilder.group({
-            name:['GJGJ'],
+            name:['Gung Jodi'],
             email: ['kk@kk.com', Validators.compose([Validators.required, EmailValidator.isValid])],
             password: ['garuda', Validators.compose([Validators.minLength(6), Validators.required])]
         });
@@ -31,7 +31,7 @@ export class CreateAccountPage {
 
     doLogin()
     {
-        this.authData.loginUser(this.registerForm.value.email, this.registerForm.value.email)
+        this.authData.loginUser(this.registerForm.value.email, this.registerForm.value.password)
             .then( authData => {
                 this.authData.loginEvent();
             },(error)=>{
