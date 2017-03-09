@@ -19,11 +19,12 @@
   <!--</ion-slides>-->
   <button ion-button class="btn-custom" small (click)="pickImage()">Pick Image</button>
   <button ion-button class="btn-custom" small (click)="addSlide()">AddSlide</button>
+  <button ion-button class="btn-custom" small (click)="deleteSlide(activeSlide)">Delete</button>
   <button ion-button class="btn-custom" small (click)="printImage(activeSlide)">Print</button>
-  <ion-slides pager effect="flip" [ngStyle]="{'height.px':dH/2 + 50}" (ionSlideDidChange)="slideChanged()">
+  <ion-slides pager effect="flip" [ngStyle]="{'height.px':dH/2 + 80}" (ionSlideDidChange)="slideChanged()">
     <ion-slide id="images{{i+1}}" *ngFor="let slide of slidesArray; let i = index;" class="middle-v">
       <div class="row gallery row-center middle-v"
-      [ngStyle]="{'height.px':dW-20,'width.px':dW-20,'border':'1px solid black','overflow':'auto','display':'inline-block'}">
+      [ngStyle]="{'height.px':dW-52,'width.px':dW-52,'border':'1px solid black','overflow':'auto','display':'inline-block'}">
         <img *ngFor="let image of images  | filter:{slideIndex:i+1}" id="image" [src]="'assets/images/'+image.url"
              [ngStyle]="{'heigth.px':((dW-80)/2)}">
       </div>

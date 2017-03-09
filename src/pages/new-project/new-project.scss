@@ -13,5 +13,6 @@ page-new-project {
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;
+    z-index: 999 !important;
   }
 }

@@ -1,7 +1,7 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, OnInit,ElementRef} from '@angular/core';
 import {NavController,Platform, NavParams, AlertController, Slides} from 'ionic-angular';
 import { ImagePicker } from 'ionic-native';
-
+import {waitRendered} from '../../components/utils';
 
 /*
   Generated class for the NewProject page.
@@ -16,128 +16,141 @@ declare var domtoimage:any;
   templateUrl: 'new-project.html'
 })
 
-export class NewProjectPage{
-  images:any[];
-  options:{};
-  data:any;
-  slidesArray:any[];
-  activeSlide:number;
-  isDevice:boolean = false;
-  dW:number;
-  dH:number;
-  dom:any;
+export class NewProjectPage implements OnInit{
+    @ViewChild(Slides) slides: Slides;
+    images:any[];
+    options:{};
+    data:any;
+    slidesArray:any[];
+    activeSlide:number;
+    isDevice:boolean = false;
+    dW:number;
+    dH:number;
+    dom:any;
 
-  @ViewChild(Slides) slides: Slides;
-
-  constructor(public navCtrl: NavController, public navParams: NavParams,
-              public alertCtrl:AlertController,private platform: Platform) {
-    this.images = [
-                    {url:'image1.jpg',slideIndex:1},
-                    {url:'image1.jpg',slideIndex:1},
-                    {url:'image2.jpg',slideIndex:2}
-                  ];
-    this.options = {
-      maximumImagesCount: 4,
+    constructor(public navCtrl: NavController, public navParams: NavParams,
+                public alertCtrl:AlertController,private platform: Platform,private _elementRef:ElementRef) {
+        this.images = [
+            {url:'image1.jpg',slideIndex:1},
+            {url:'image3.jpg',slideIndex:1},
+            {url:'image2.jpg',slideIndex:2}
+        ];
+        this.options = {
+            maximumImagesCount: 4,
+        };
+        this.slidesArray=[{slideTitle:'Slide 1'},{slideTitle:'Slide 2'}];
+        this.activeSlide=1;
+        this.dW = this.platform.width();
+        this.dH = this.platform.height();
     };
-    this.slidesArray=[{slideTitle:'Slide 1'},{slideTitle:'Slide 2'}];
-    this.activeSlide=1;
-    this.dW = this.platform.width();
-    this.dH = this.platform.height();
-  };
 
-
-  deleteSlide(index)
-  {
-    if(this.slidesArray.length-1==index)
-    {
-      this.slides.slideTo(index-1,500);
+    public ngOnInit() {
+        let swiperContainer = this._elementRef.nativeElement.getElementsByClassName('swiper-container')[0];
+        waitRendered(swiperContainer).then(()=>{
+            this.slides.update();
+        });
     }
-    this.slidesArray[index] = null;
 
-    console.log("deleted index is", index);
-  }
-
-  addSlide()
-  {
-    this.slidesArray.push({slideTitle:'Slide '});
-    if(this.slidesArray.length==1)
+    deleteSlide(index)
     {
-      this.activeSlide = this.slides.getActiveIndex()+1;
+        this.deleteByValue(index);
+
+        let deleted=index-1;
+        //
+        this.slidesArray.splice(deleted,1);
+        this.slides.update();
+        // console.log("deleted index is ", deleted);
+        // console.log("images ",this.images);
     }
-  }
 
-  slideChanged() {
-    let currentIndex = this.slides.getActiveIndex()+1;
-    // let previousIndex = this.slides.getPreviousIndex()+1;
-    if(this.slidesArray.length<=1)
-    {
-      currentIndex=0;
+    deleteByValue(val) {
+        console.log("INDEX DELETED ",val);
+        for(let f in this.images) {
+            if(this.images[f].slideIndex == val) {
+                delete this.images[f];
+            }
+        }
     }
-    this.activeSlide = currentIndex;
-    console.log("Current index is", this.activeSlide);
-  }
 
-  printImage(index)
-  {
-    console.log('images'+index);
-    let node = document.getElementById('images'+index);
-
-    domtoimage.toPng(node)
-      .then(function (dataUrl) {
-        let img = new Image();
-        img.src = dataUrl;
-        document.getElementById('printed'+index).appendChild(img);
-      })
-      .catch(function (error) {
-        console.error('oops, something went wrong!', error);
-      });
-  }
-
-  pickImage()
-  {
-    console.log(this.isDevice);
-
-    // this.platform.ready().then(() =>{
-    //   this.isDevice = true;
-    // });
-    if(this.isDevice==true)
+    addSlide()
     {
-      ImagePicker.hasReadPermission().then(result=>{
-        if(!result)
+        this.slidesArray.push({slideTitle:'Slide '});
+        if(this.slidesArray.length==1)
         {
-          ImagePicker.requestReadPermission();
+          this.activeSlide = this.slides.getActiveIndex()+1;
         }
-      });
-      ImagePicker.getPictures(this.options).then((results) => {
-        for (var i = 0; i < results.length; i++) {
-          console.log('Image URI: ' + results[i]);
-        }
-      }, (err) => { });
+        this.slides.update();
     }
-    else
+
+    slideChanged() {
+        let currentIndex = this.slides.getActiveIndex()+1;
+        // let previousIndex = this.slides.getPreviousIndex()+1;
+        if(this.slidesArray.length<=1)
+        {
+          currentIndex=0;
+        }
+        this.activeSlide = currentIndex;
+        console.log("Current index is", this.activeSlide);
+    }
+
+    printImage(index)
     {
-      let i = Math.floor((Math.random()*3)+1);
-      let url = 'image'+i+'.jpg';
+        console.log('images'+index);
+        let node = document.getElementById('images'+index);
 
-      if(this.activeSlide!=null)
-      {
-        this.images.push({url:url,slideIndex:this.activeSlide});
-        console.log(this.images);
-      }
+        domtoimage.toPng(node)
+          .then(function (dataUrl) {
+            let img = new Image();
+            img.src = dataUrl;
+            document.getElementById('printed'+index).appendChild(img);
+          })
+          .catch(function (error) {
+            console.error('oops, something went wrong!', error);
+          });
     }
-  }
 
-  showAlert() {
-    let alert = this.alertCtrl.create({
-      title: 'New Friend!',
-      subTitle: 'Your friend, Obi wan Kenobi, just accepted your friend request!',
-      buttons: ['OK']
-    });
-    alert.present();
-  }
+    pickImage()
+    {
+        console.log(this.isDevice);
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad NewProjectPage');
-  }
+        // this.platform.ready().then(() =>{
+        //   this.isDevice = true;
+        // });
+        if(this.isDevice==true)
+        {
+          ImagePicker.hasReadPermission().then(result=>{
+            if(!result)
+            {
+              ImagePicker.requestReadPermission();
+            }
+          });
+          ImagePicker.getPictures(this.options).then((results) => {
+            for (var i = 0; i < results.length; i++) {
+              console.log('Image URI: ' + results[i]);
+            }
+          }, (err) => { });
+        }
+        else
+        {
+          let i = Math.floor((Math.random()*3)+1);
+          let url = 'image'+i+'.jpg';
+
+          if(this.activeSlide!=null)
+          {
+            this.images.push({url:url,slideIndex:this.activeSlide});
+            console.log(this.images);
+          }
+        }
+    }
+
+    showAlert() {
+        let alert = this.alertCtrl.create({
+            title: 'New Friend!',
+            subTitle: 'Your friend, Obi wan Kenobi, just accepted your friend request!',
+            buttons: ['OK']
+        });
+        alert.present();
+    }
+
 
 }
