@@ -26,7 +26,7 @@
       <div class="row gallery row-center middle-v"
       [ngStyle]="{'height.px':dW-52,'width.px':dW-52,'border':'1px solid black','overflow':'auto','display':'inline-block'}">
         <img *ngFor="let image of images  | filter:{slideIndex:i+1}" id="image" [src]="'assets/images/'+image.url"
-             [ngStyle]="{'heigth.px':((dW-80)/2)}">
+             [ngStyle]="{'heigth.px':((dW-80)/2)}" (click)="detail(image)">
       </div>
       <!--<div id="printed{{i+1}}" [ngStyle]="{'height.px':dW-20,'width.px':dW-20,'border':'1px solid black','overflow':'auto','display':'inline-block'}"></div>-->
     </ion-slide>

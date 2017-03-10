@@ -55,18 +55,34 @@ export class NewProjectPage implements OnInit{
     {
         this.deleteByValue(index);
 
+
         let deleted=index-1;
         //
         this.slidesArray.splice(deleted,1);
         this.slides.update();
-        // console.log("deleted index is ", deleted);
-        // console.log("images ",this.images);
+        this.updateByValue(index);
+        this.slides.slidePrev();
+        console.log("IMAGES: ",this.images);
+    }
+
+    detail(image)
+    {
+        console.log(image)
+    }
+
+    updateByValue(val) {
+        console.log("INDEX DELETED ",val);
+        for(let f in this.images) {
+            if(this.images[f].slideIndex > val) {
+                this.images[f].slideIndex-=1;
+            }
+        }
     }
 
     deleteByValue(val) {
-        console.log("INDEX DELETED ",val);
         for(let f in this.images) {
             if(this.images[f].slideIndex == val) {
+                console.log("DELETED: ",this.images[f]);
                 delete this.images[f];
             }
         }
