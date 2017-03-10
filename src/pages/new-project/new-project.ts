@@ -60,7 +60,7 @@ export class NewProjectPage implements OnInit{
         //
         this.slidesArray.splice(deleted,1);
         this.slides.update();
-        this.updateByValue(index);
+        // this.updateByValue(index);
         this.slides.slidePrev();
         console.log("IMAGES: ",this.images);
     }
@@ -70,22 +70,39 @@ export class NewProjectPage implements OnInit{
         console.log(image)
     }
 
-    updateByValue(val) {
-        console.log("INDEX DELETED ",val);
-        for(let f in this.images) {
-            if(this.images[f].slideIndex > val) {
-                this.images[f].slideIndex-=1;
-            }
-        }
-    }
 
     deleteByValue(val) {
-        for(let f in this.images) {
-            if(this.images[f].slideIndex == val) {
-                console.log("DELETED: ",this.images[f]);
-                delete this.images[f];
+        for(let i=0;i<this.images.length;i++)
+        {
+            if(this.images[i].slideIndex==val)
+            {
+                console.log("DELETED: ",this.images[i]);
+                this.images.splice(i,1);
             }
         }
+        for(let i=0;i<this.images.length;i++)
+        {
+            if(this.images[i].slideIndex>val)
+            {
+                console.log("UPDATED FROM: ",this.images[i]);
+                this.images[i].slideIndex-=1;
+                console.log("UPDATED TO: ",this.images[i]);
+            }
+        }
+        // for(let f in this.images) {
+        //     if(this.images[f].slideIndex == val) {
+        //         console.log("DELETED: ",this.images[f]);
+        //         delete this.images[f];
+        //     }
+        // }
+
+        // for(let f in this.images) {
+        //     if(this.images[f].slideIndex > val) {
+        //         console.log("UPDATED FROM: ",this.images[f]);
+        //         this.images[f].slideIndex-=1;
+        //         console.log("UPDATED TO: ",this.images[f]);
+        //     }
+        // }
     }
 
     addSlide()
@@ -96,6 +113,7 @@ export class NewProjectPage implements OnInit{
           this.activeSlide = this.slides.getActiveIndex()+1;
         }
         this.slides.update();
+        console.log("IMAGES: ",this.images);
     }
 
     slideChanged() {
