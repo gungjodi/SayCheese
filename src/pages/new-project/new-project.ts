@@ -54,8 +54,6 @@ export class NewProjectPage implements OnInit{
     deleteSlide(index)
     {
         this.deleteByValue(index);
-
-
         let deleted=index-1;
         //
         this.slidesArray.splice(deleted,1);
@@ -89,20 +87,6 @@ export class NewProjectPage implements OnInit{
                 console.log("UPDATED TO: ",this.images[i]);
             }
         }
-        // for(let f in this.images) {
-        //     if(this.images[f].slideIndex == val) {
-        //         console.log("DELETED: ",this.images[f]);
-        //         delete this.images[f];
-        //     }
-        // }
-
-        // for(let f in this.images) {
-        //     if(this.images[f].slideIndex > val) {
-        //         console.log("UPDATED FROM: ",this.images[f]);
-        //         this.images[f].slideIndex-=1;
-        //         console.log("UPDATED TO: ",this.images[f]);
-        //     }
-        // }
     }
 
     addSlide()
