@@ -10,7 +10,7 @@ import {ArrayFilterPipe} from './group.pipe';
 import {AuthData} from '../providers/auth-data';
 import { CreateAccountPage } from '../pages/create-account/create-account';
 import { BtnCustom } from '../components/btn-custom/btn-custom';
-
+import { MasonryModule } from 'angular2-masonry';
 const cloudSettings: CloudSettings = {
     'core': {
         'app_id': 'fc356c54'
@@ -30,7 +30,8 @@ const cloudSettings: CloudSettings = {
     ],
     imports: [
         IonicModule.forRoot(MyApp),
-        CloudModule.forRoot(cloudSettings)
+        CloudModule.forRoot(cloudSettings),
+        MasonryModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [

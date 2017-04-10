@@ -1,6 +1,6 @@
 import {Component, ViewChild, OnInit,ElementRef} from '@angular/core';
 import {NavController,Platform, NavParams, AlertController, Slides} from 'ionic-angular';
-import { ImagePicker } from 'ionic-native';
+import {ImagePicker,Camera} from 'ionic-native';
 import {waitRendered} from '../../components/utils';
 
 /*
@@ -10,6 +10,7 @@ import {waitRendered} from '../../components/utils';
   Ionic pages and navigation.
 */
 declare var domtoimage:any;
+declare var cordova:any;
 
 @Component({
   selector: 'page-new-project',
@@ -31,12 +32,14 @@ export class NewProjectPage implements OnInit{
     constructor(public navCtrl: NavController, public navParams: NavParams,
                 public alertCtrl:AlertController,private platform: Platform,private _elementRef:ElementRef) {
         this.images = [
-            {url:'image1.jpg',slideIndex:1},
-            {url:'image3.jpg',slideIndex:1},
-            {url:'image2.jpg',slideIndex:2}
+            {url:'assets/images/image1.jpg',slideIndex:1},
+            {url:'assets/images/image3.jpg',slideIndex:1},
+            {url:'assets/images/image2.jpg',slideIndex:2}
         ];
         this.options = {
             maximumImagesCount: 4,
+            sourceType        : Camera.PictureSourceType.PHOTOLIBRARY,
+            destinationType : Camera.DestinationType.NATIVE_URI
         };
         this.slidesArray=[{slideTitle:'Slide 1'},{slideTitle:'Slide 2'}];
         this.activeSlide=1;
@@ -49,6 +52,7 @@ export class NewProjectPage implements OnInit{
         waitRendered(swiperContainer).then(()=>{
             this.slides.update();
         });
+        // console.log(MasonryOptions)
     }
 
     deleteSlide(index)
@@ -134,7 +138,7 @@ export class NewProjectPage implements OnInit{
         // this.platform.ready().then(() =>{
         //   this.isDevice = true;
         // });
-        if(this.isDevice==true)
+        if(!this.platform.is("mobileweb"))
         {
           ImagePicker.hasReadPermission().then(result=>{
             if(!result)
@@ -145,13 +149,25 @@ export class NewProjectPage implements OnInit{
           ImagePicker.getPictures(this.options).then((results) => {
             for (var i = 0; i < results.length; i++) {
               console.log('Image URI: ' + results[i]);
+                if(this.activeSlide!=null)
+                {
+                    if (this.platform.is('android')) {
+                        this.images.push({url:results[i],slideIndex:this.activeSlide});
+                    }
+                    else
+                    {
+                        this.images.push({url:results[i],slideIndex:this.activeSlide});
+                    }
+
+                    console.log(this.images);
+                }
             }
           }, (err) => { });
         }
         else
         {
           let i = Math.floor((Math.random()*3)+1);
-          let url = 'image'+i+'.jpg';
+          let url = 'assets/image'+i+'.jpg';
 
           if(this.activeSlide!=null)
           {
@@ -170,5 +186,15 @@ export class NewProjectPage implements OnInit{
         alert.present();
     }
 
-
+    onLongClick(image)
+    {
+        for(let i=0;i<this.images.length;i++)
+        {
+            if(this.images[i]==image)
+            {
+                console.log("DELETED: ",this.images[i]);
+                this.images.splice(i,1);
+            }
+        }
+    }
 }
