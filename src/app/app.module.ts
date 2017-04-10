@@ -1,3 +1,4 @@
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
@@ -11,6 +12,7 @@ import {AuthData} from '../providers/auth-data';
 import { CreateAccountPage } from '../pages/create-account/create-account';
 import { BtnCustom } from '../components/btn-custom/btn-custom';
 import { MasonryModule } from 'angular2-masonry';
+
 const cloudSettings: CloudSettings = {
     'core': {
         'app_id': 'fc356c54'
@@ -29,6 +31,7 @@ const cloudSettings: CloudSettings = {
         BtnCustom
     ],
     imports: [
+        BrowserModule,
         IonicModule.forRoot(MyApp),
         CloudModule.forRoot(cloudSettings),
         MasonryModule
