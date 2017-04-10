@@ -2,7 +2,7 @@ import {Component, ViewChild, OnInit,ElementRef} from '@angular/core';
 import {NavController,Platform, NavParams, AlertController, Slides} from 'ionic-angular';
 import {ImagePicker,Camera} from 'ionic-native';
 import {waitRendered} from '../../components/utils';
-
+import { Printer, PrintOptions } from '@ionic-native/printer';
 /*
   Generated class for the NewProject page.
 
@@ -13,8 +13,9 @@ declare var domtoimage:any;
 declare var cordova:any;
 
 @Component({
-  selector: 'page-new-project',
-  templateUrl: 'new-project.html'
+    selector: 'page-new-project',
+    templateUrl: 'new-project.html',
+    providers:[Printer]
 })
 
 export class NewProjectPage implements OnInit{
@@ -30,10 +31,9 @@ export class NewProjectPage implements OnInit{
     dom:any;
 
     constructor(public navCtrl: NavController, public navParams: NavParams,
-                public alertCtrl:AlertController,private platform: Platform,private _elementRef:ElementRef) {
+                public alertCtrl:AlertController,private platform: Platform,private _elementRef:ElementRef,public printer: Printer) {
         this.images = [
             {url:'assets/images/image1.jpg',slideIndex:1},
-            {url:'assets/images/image3.jpg',slideIndex:1},
             {url:'assets/images/image2.jpg',slideIndex:2}
         ];
         this.options = {
@@ -41,6 +41,7 @@ export class NewProjectPage implements OnInit{
             sourceType        : Camera.PictureSourceType.PHOTOLIBRARY,
             destinationType : Camera.DestinationType.NATIVE_URI
         };
+
         this.slidesArray=[{slideTitle:'Slide 1'},{slideTitle:'Slide 2'}];
         this.activeSlide=1;
         this.dW = this.platform.width();
@@ -117,18 +118,31 @@ export class NewProjectPage implements OnInit{
 
     printImage(index)
     {
-        console.log('images'+index);
-        let node = document.getElementById('images'+index);
+        // console.log('images'+index);
+        // let node = document.getElementById('images'+index);
+        //
+        // domtoimage.toPng(node)
+        //   .then(function (dataUrl) {
+        //     let img = new Image();
+        //     img.src = dataUrl;
+        //     document.getElementById('printed'+index).appendChild(img);
+        //   })
+        //   .catch(function (error) {
+        //     console.error('oops, something went wrong!', error);
+        //   });
+        let options: PrintOptions = {
+            name: 'MyDocument'
+        };
 
-        domtoimage.toPng(node)
-          .then(function (dataUrl) {
-            let img = new Image();
-            img.src = dataUrl;
-            document.getElementById('printed'+index).appendChild(img);
-          })
-          .catch(function (error) {
-            console.error('oops, something went wrong!', error);
-          });
+        this.printer.isAvailable().then(function(){
+            this.printer.print("https://www.techiediaries.com",options).then(function(){
+                alert("printing done successfully !");
+            },function(){
+                alert("Error while printing !");
+            });
+        }, function(){
+            alert('Error : printing is unavailable on your device ');
+        });
     }
 
     pickImage()
@@ -138,6 +152,20 @@ export class NewProjectPage implements OnInit{
         // this.platform.ready().then(() =>{
         //   this.isDevice = true;
         // });
+        if(this.activeSlide!=null)
+        {
+            console.log(this.images);
+            for(let i=0;i<this.images.length;i++)
+            {
+                if(this.images[i].slideIndex==this.activeSlide)
+                {
+                    console.log("DELETED TO UPDATE : ",this.images[i]);
+                    this.images.splice(i,1);
+                }
+            }
+            this.slides.update();
+        }
+
         if(!this.platform.is("mobileweb"))
         {
           ImagePicker.hasReadPermission().then(result=>{
@@ -167,7 +195,7 @@ export class NewProjectPage implements OnInit{
         else
         {
           let i = Math.floor((Math.random()*3)+1);
-          let url = 'assets/image'+i+'.jpg';
+          let url = 'assets/images/image'+i+'.jpg';
 
           if(this.activeSlide!=null)
           {
