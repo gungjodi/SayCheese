@@ -8,15 +8,6 @@
 </ion-header>
 
 <ion-content padding style="background-color: #dedede">
-  <!--<ion-slides options="options" slider="data.slider" >-->
-    <!--<ion-slide-page class="middle-v" ng-repeat="(key, value) in pickedImages | groupBy: 'page'">-->
-      <!--<div class="row gallery row-center middle-v"-->
-           <!--style="border: 1px solid black;width:{{+dev_width-20}}px;height: {{+dev_width-20}}px;overflow: auto;display: inline-block;">-->
-        <!--<img id="image{{$index}}" ng-repeat="image in value" ng-src="{{image.url}}"-->
-             <!--on-double-tap="onDoubleTap($index)" style="height:{{(+dev_width-80)/2}}px;z-index: 9999;" transform>-->
-      <!--</div>-->
-    <!--</ion-slide-page>-->
-  <!--</ion-slides>-->
   <button ion-button class="btn-custom" small (click)="pickImage()">Pick Image</button>
   <button ion-button class="btn-custom" small (click)="addSlide()">AddSlide</button>
   <button ion-button class="btn-custom" small (click)="deleteSlide(activeSlide)">Delete</button>

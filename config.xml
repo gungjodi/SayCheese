@@ -10,6 +10,9 @@
   <allow-navigation href="http://10.164.71.23:8100"/>
   <allow-navigation href="*"/>
   <allow-navigation href="file://*/*"/>
+  <allow-navigation href="http://10.164.83.187:8100"/>
+  <allow-navigation href="http://10.164.91.245:8100"/>
+  <allow-navigation href="http://169.254.231.33:8100"/>
   <allow-intent href="*"/>
   <allow-intent href="http://*/*"/>
   <allow-intent href="https://*/*"/>

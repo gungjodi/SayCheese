@@ -1,8 +1,9 @@
 import {Component, ViewChild, OnInit,ElementRef} from '@angular/core';
-import {NavController,Platform, NavParams, AlertController, Slides} from 'ionic-angular';
-import {ImagePicker,Camera} from 'ionic-native';
+import {NavController,Platform, NavParams, AlertController, Slides, ToastController, LoadingController, Loading} from 'ionic-angular';
+import {ImagePicker,Camera, Transfer } from 'ionic-native';
 import {waitRendered} from '../../components/utils';
 import * as domtoimage from 'dom-to-image';
+import { AuthData } from '../../providers/auth-data';
 /*
   Generated class for the NewProject page.
 
@@ -28,16 +29,20 @@ export class NewProjectPage implements OnInit{
     dW:number;
     dH:number;
     dom:any;
+    lastImage: string = null;
+    loading: Loading;
+    imgUrl:any;
 
     constructor(public navCtrl: NavController, public navParams: NavParams,
                 public alertCtrl:AlertController,private platform: Platform,
-                private _elementRef:ElementRef) {
+                private _elementRef:ElementRef,public toastCtrl: ToastController,
+                public loadingCtrl: LoadingController,public authData:AuthData) {
         this.images = [
             {url:'assets/images/image4.jpg',slideIndex:1},
             {url:'assets/images/image2.jpg',slideIndex:2}
         ];
         this.options = {
-            maximumImagesCount: 4,
+            maximumImagesCount: 1,
             sourceType        : Camera.PictureSourceType.PHOTOLIBRARY,
             destinationType : Camera.DestinationType.NATIVE_URI
         };
@@ -53,7 +58,8 @@ export class NewProjectPage implements OnInit{
         waitRendered(swiperContainer).then(()=>{
             this.slides.update();
         });
-        // console.log(MasonryOptions)
+        // let email = this.authData.getAuthData().email;
+        // console.log(email);
     }
 
     deleteSlide(index)
@@ -121,14 +127,58 @@ export class NewProjectPage implements OnInit{
         console.log('image'+index);
         let div = document.getElementById('image'+index);
         console.log(div);
-
-        domtoimage.toBlob(div)
-            .then(function (blob) {
-
+        this.loading = this.loadingCtrl.create({
+            content: 'Uploading...',
+        });
+        this.loading.present();
+        domtoimage.toPng(div)
+            .then((dataUrl) => {
+                this.uploadImage(dataUrl);
             })
-            .catch(function (error) {
+            .catch((error)=>{
                 console.error('oops, something went wrong!', error);
+                this.loading.dismissAll()
+                this.presentToast('oops, something went wrong!');
             });
+    }
+
+    private presentToast(text) {
+        let toast = this.toastCtrl.create({
+            message: text,
+            duration: 3000,
+            position: 'top'
+        });
+        toast.present();
+    }
+
+    public uploadImage(dataurl) {
+        // Destination URL
+        let email = this.authData.getAuthData().email;
+        let url = "http://findoctor.esy.es/saycheese/upload.php?email="+email;
+
+        let targetPath = dataurl;
+        let filename = "page_"+this.activeSlide+".png";
+
+        let options = {
+            fileKey: "file",
+            fileName: filename,
+            chunkedMode: false,
+            mimeType: "multipart/form-data",
+            params : {'fileName': filename}
+        };
+
+        const fileTransfer = new Transfer();
+
+        // Use the FileTransfer to upload the image
+        fileTransfer.upload(targetPath, url, options).then(data => {
+            this.loading.dismissAll()
+            this.presentToast('Image succesful uploaded.');
+            console.log(data);
+        }, err => {
+            this.loading.dismissAll()
+            this.presentToast('Error while uploading file.');
+            console.log('Error while uploading file.');
+        });
     }
 
     pickImage()
