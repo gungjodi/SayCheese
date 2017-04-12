@@ -2,20 +2,19 @@ import {Component, ViewChild, OnInit,ElementRef} from '@angular/core';
 import {NavController,Platform, NavParams, AlertController, Slides} from 'ionic-angular';
 import {ImagePicker,Camera} from 'ionic-native';
 import {waitRendered} from '../../components/utils';
-import { Printer, PrintOptions } from '@ionic-native/printer';
+import * as domtoimage from 'dom-to-image';
 /*
   Generated class for the NewProject page.
 
   See http://ionicframework.com/docs/v2/components/#navigation for more info on
   Ionic pages and navigation.
 */
-declare var domtoimage:any;
+
 declare var cordova:any;
 
 @Component({
     selector: 'page-new-project',
-    templateUrl: 'new-project.html',
-    providers:[Printer]
+    templateUrl: 'new-project.html'
 })
 
 export class NewProjectPage implements OnInit{
@@ -31,9 +30,10 @@ export class NewProjectPage implements OnInit{
     dom:any;
 
     constructor(public navCtrl: NavController, public navParams: NavParams,
-                public alertCtrl:AlertController,private platform: Platform,private _elementRef:ElementRef,public printer: Printer) {
+                public alertCtrl:AlertController,private platform: Platform,
+                private _elementRef:ElementRef) {
         this.images = [
-            {url:'assets/images/image1.jpg',slideIndex:1},
+            {url:'assets/images/image4.jpg',slideIndex:1},
             {url:'assets/images/image2.jpg',slideIndex:2}
         ];
         this.options = {
@@ -118,31 +118,17 @@ export class NewProjectPage implements OnInit{
 
     printImage(index)
     {
-        // console.log('images'+index);
-        // let node = document.getElementById('images'+index);
-        //
-        // domtoimage.toPng(node)
-        //   .then(function (dataUrl) {
-        //     let img = new Image();
-        //     img.src = dataUrl;
-        //     document.getElementById('printed'+index).appendChild(img);
-        //   })
-        //   .catch(function (error) {
-        //     console.error('oops, something went wrong!', error);
-        //   });
-        let options: PrintOptions = {
-            name: 'MyDocument'
-        };
+        console.log('image'+index);
+        let div = document.getElementById('image'+index);
+        console.log(div);
 
-        this.printer.isAvailable().then(function(){
-            this.printer.print("https://www.techiediaries.com",options).then(function(){
-                alert("printing done successfully !");
-            },function(){
-                alert("Error while printing !");
+        domtoimage.toBlob(div)
+            .then(function (blob) {
+
+            })
+            .catch(function (error) {
+                console.error('oops, something went wrong!', error);
             });
-        }, function(){
-            alert('Error : printing is unavailable on your device ');
-        });
     }
 
     pickImage()
@@ -194,7 +180,7 @@ export class NewProjectPage implements OnInit{
         }
         else
         {
-          let i = Math.floor((Math.random()*3)+1);
+          let i = Math.floor((Math.random()*4)+1);
           let url = 'assets/images/image'+i+'.jpg';
 
           if(this.activeSlide!=null)

@@ -7,7 +7,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding style="background-color: #dedede">
   <!--<ion-slides options="options" slider="data.slider" >-->
     <!--<ion-slide-page class="middle-v" ng-repeat="(key, value) in pickedImages | groupBy: 'page'">-->
       <!--<div class="row gallery row-center middle-v"-->
@@ -21,19 +21,14 @@
   <button ion-button class="btn-custom" small (click)="addSlide()">AddSlide</button>
   <button ion-button class="btn-custom" small (click)="deleteSlide(activeSlide)">Delete</button>
   <button ion-button class="btn-custom" small (click)="printImage(activeSlide)">Print</button>
-  <ion-slides pager effect="flip" [ngStyle]="{'height.px':dH/2 + 90,'margin-top':'15px'}" (ionSlideDidChange)="slideChanged()">
-    <ion-slide id="images{{i+1}}" *ngFor="let slide of slidesArray; let i = index;" style="border: 1px solid black">
-      <masonry [ngStyle]="{'height.px':dW-52,'width.px':dW-52,'overflow':'auto','display':'inline-block'}">
-        <masonry-brick class="brick" *ngFor="let image of images  | filter:{slideIndex:i+1}">
-          <img id="image" src={{image.url}} (click)="detail(image)" (press)="onLongClick(image)">
-        </masonry-brick>
-
-      </masonry>
-
-      <!--<div id="printed{{i+1}}" [ngStyle]="{'height.px':dW-20,'width.px':dW-20,'border':'1px solid black','overflow':'auto','display':'inline-block'}"></div>-->
+  <ion-slides pager effect="flip" [ngStyle]="{'height.px':dH/2 + 90}" (ionSlideDidChange)="slideChanged()">
+    <ion-slide *ngFor="let slide of slidesArray; let i = index;">
+        <div id="image{{i+1}}" [ngStyle]="{'height.px':dW-52,'width.px':dW-52}" class="divframe" style="background-color: white" *ngFor="let image of images  | filter:{slideIndex:i+1}">
+          <img src={{image.url}} (click)="detail(image)" (press)="onLongClick(image)" class="middle-v">
+        </div>
     </ion-slide>
   </ion-slides>
-  <p>
 
-  </p>
+
+
 </ion-content>
