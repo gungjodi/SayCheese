@@ -1,6 +1,6 @@
 import {Component, ViewChild, OnInit,ElementRef} from '@angular/core';
 import {NavController,Platform, NavParams, AlertController, Slides, ToastController, LoadingController, Loading} from 'ionic-angular';
-import {ImagePicker,Camera, Transfer } from 'ionic-native';
+import {Camera, File, Transfer, FilePath} from 'ionic-native';
 import {waitRendered} from '../../components/utils';
 import * as domtoimage from 'dom-to-image';
 import { AuthData } from '../../providers/auth-data';
@@ -125,9 +125,14 @@ export class NewProjectPage implements OnInit{
             content: 'Uploading...',
         });
         this.loading.present();
-        domtoimage.toPng(div)
+        domtoimage.toJpeg(div,{quality:0.95})
             .then((dataUrl) => {
-                this.uploadImage(dataUrl);
+                let img = new Image();
+                img.src = dataUrl;
+                // console.log(dataUrl);
+                // this.uploadImage(dataUrl);
+                document.getElementById("printed").appendChild(img);
+                this.loading.dismissAll();
             })
             .catch((error)=>{
                 console.error('oops, something went wrong!', error);
@@ -146,33 +151,46 @@ export class NewProjectPage implements OnInit{
     }
 
     public uploadImage(dataurl) {
+
         // Destination URL
         let email = this.authData.getAuthData().email;
         let url = "http://findoctor.esy.es/saycheese/upload.php?email="+email;
 
-        let targetPath = dataurl;
-        let filename = "page_"+this.activeSlide+".png";
+        // let targetPath = dataurl;
+        // let filename = "page_"+this.activeSlide+".png";
 
-        let options = {
-            fileKey: "file",
-            fileName: filename,
-            chunkedMode: false,
-            mimeType: "multipart/form-data",
-            params : {'fileName': filename}
-        };
+        for(let i=0;i<this.images.length;i++)
+        {
+            if(this.images[i].slideIndex==this.activeSlide)
+            {
+                console.log("DELETED TO UPDATE : ",this.images[i]);
 
-        const fileTransfer = new Transfer();
+                var targetPath = this.pathForImage(this.images[i]);
+                var filename = "page_"+this.activeSlide+".png";
+                const fileTransfer = new Transfer();
+                let options = {
+                    fileKey: "file",
+                    fileName: filename,
+                    chunkedMode: false,
+                    mimeType: "multipart/form-data",
+                    params : {'fileName': filename}
+                };
+                // Use the FileTransfer to upload the image
+                fileTransfer.upload(targetPath, url, options).then(data => {
+                    this.loading.dismissAll()
+                    this.presentToast('Image '+this.activeSlide+' succesfully uploaded.');
+                    console.log(data);
+                }, err => {
+                    this.loading.dismissAll()
+                    this.presentToast('Error while uploading file.');
+                    console.log('Error while uploading file.',err);
+                });
+            }
+        }
 
-        // Use the FileTransfer to upload the image
-        fileTransfer.upload(targetPath, url, options).then(data => {
-            this.loading.dismissAll()
-            this.presentToast('Image succesful uploaded.');
-            console.log(data);
-        }, err => {
-            this.loading.dismissAll()
-            this.presentToast('Error while uploading file.');
-            console.log('Error while uploading file.');
-        });
+
+
+
     }
 
     pickImage2()
@@ -191,13 +209,6 @@ export class NewProjectPage implements OnInit{
             this.slides.update();
         }
 
-        ImagePicker.hasReadPermission().then(result=>{
-          if(!result)
-          {
-            ImagePicker.requestReadPermission();
-          }
-        });
-
         let options = {
             maximumImagesCount: 1,
             sourceType        : Camera.PictureSourceType.PHOTOLIBRARY,
@@ -206,14 +217,57 @@ export class NewProjectPage implements OnInit{
             correctOrientation:true
         };
 
-        Camera.getPicture(options).then((result) => {
+        Camera.getPicture(options).then((imagePath) => {
             if(this.activeSlide!=null)
             {
-                this.images.push({url:result,slideIndex:this.activeSlide});
+                // this.images.push({url:result,slideIndex:this.activeSlide});
+                if (this.platform.is('android')) {
+                    FilePath.resolveNativePath(imagePath)
+                        .then(filePath => {
+                            let correctPath = filePath.substr(0, filePath.lastIndexOf('/') + 1);
+                            let currentName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.lastIndexOf('?'));
+                            this.copyFileToLocalDir(correctPath, currentName, this.createFileName());
+                            console.log("P : "+correctPath+" - N : "+currentName);
+                        });
+                } else {
+                    var currentName = imagePath.substr(imagePath.lastIndexOf('/') + 1);
+                    var correctPath = imagePath.substr(0, imagePath.lastIndexOf('/') + 1);
+                    this.copyFileToLocalDir(correctPath, currentName, this.createFileName());
+                }
             }
+
           },err=>{
-            console.log("Failed")
+            this.presentToast('Error while selecting image.');
         });
+
+    }
+
+    private createFileName() {
+        var d = new Date(),
+            n = d.getTime(),
+            newFileName =  n + ".jpg";
+        return newFileName;
+    }
+
+    // Copy the image to a local folder
+    private copyFileToLocalDir(namePath, currentName, newFileName) {
+        File.copyFile(namePath, currentName, cordova.file.dataDirectory, newFileName).then(success => {
+            this.lastImage = newFileName;
+            let path = this.pathForImage(this.lastImage);
+            this.images.push({url:path,slideIndex:this.activeSlide});
+            console.log(this.images);
+        }, error => {
+            this.presentToast('Error while storing file.');
+        });
+    }
+
+    // Always get the accurate path to your apps folder
+    public pathForImage(img) {
+        if (img === null) {
+            return '';
+        } else {
+            return cordova.file.dataDirectory + img;
+        }
     }
 
     pickImage()
