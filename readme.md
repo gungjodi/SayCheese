@@ -1,7 +1,7 @@
-before use:
-npm install
+before use:<br>
+npm install<br>
 
-other dependencies:
-npm install --save @ionic-native/printer
-npm install @ionic/cloud-angular --save
-npm install angular2-masonry --save
+other dependencies:<br>
+npm install --save @ionic-native/printer<br>
+npm install @ionic/cloud-angular --save<br>
+npm install angular2-masonry --save<br>

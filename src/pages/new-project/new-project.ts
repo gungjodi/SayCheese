@@ -137,7 +137,7 @@ export class NewProjectPage implements OnInit{
             })
             .catch((error)=>{
                 console.error('oops, something went wrong!', error);
-                this.loading.dismissAll()
+                this.loading.dismissAll();
                 this.presentToast('oops, something went wrong!');
             });
     }

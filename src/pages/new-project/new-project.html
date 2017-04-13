@@ -15,7 +15,7 @@
   <ion-slides pager effect="flip" [ngStyle]="{'height.px':dH/2 + 90}" (ionSlideDidChange)="slideChanged()">
     <ion-slide *ngFor="let slide of slidesArray; let i = index;">
         <div id="image{{i+1}}" [ngStyle]="{'height.px':dW-52,'width.px':dW-52}" class="divframe" style="background-color: white" *ngFor="let image of images  | filter:{slideIndex:i+1}">
-          <img src={{image.url}} (click)="detail(image)" (press)="onLongClick(image)" class="middle-v">
+          <img [src]="image.url" (click)="detail(image)" (press)="onLongClick(image)" class="middle-v">
         </div>
     </ion-slide>
   </ion-slides>
