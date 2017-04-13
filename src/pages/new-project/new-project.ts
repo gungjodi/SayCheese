@@ -21,7 +21,6 @@ declare var cordova:any;
 export class NewProjectPage implements OnInit{
     @ViewChild(Slides) slides: Slides;
     images:any[];
-    options:{};
     data:any;
     slidesArray:any[];
     activeSlide:number;
@@ -41,11 +40,6 @@ export class NewProjectPage implements OnInit{
             {url:'assets/images/image4.jpg',slideIndex:1},
             {url:'assets/images/image2.jpg',slideIndex:2}
         ];
-        this.options = {
-            maximumImagesCount: 1,
-            sourceType        : Camera.PictureSourceType.PHOTOLIBRARY,
-            destinationType : Camera.DestinationType.NATIVE_URI
-        };
 
         this.slidesArray=[{slideTitle:'Slide 1'},{slideTitle:'Slide 2'}];
         this.activeSlide=1;
@@ -181,13 +175,50 @@ export class NewProjectPage implements OnInit{
         });
     }
 
+    pickImage2()
+    {
+        if(this.activeSlide!=null)
+        {
+            console.log(this.images);
+            for(let i=0;i<this.images.length;i++)
+            {
+                if(this.images[i].slideIndex==this.activeSlide)
+                {
+                    console.log("DELETED TO UPDATE : ",this.images[i]);
+                    this.images.splice(i,1);
+                }
+            }
+            this.slides.update();
+        }
+
+        ImagePicker.hasReadPermission().then(result=>{
+          if(!result)
+          {
+            ImagePicker.requestReadPermission();
+          }
+        });
+
+        let options = {
+            maximumImagesCount: 1,
+            sourceType        : Camera.PictureSourceType.PHOTOLIBRARY,
+            destinationType : Camera.DestinationType.FILE_URI,
+            encodingType:Camera.EncodingType.JPEG,
+            correctOrientation:true
+        };
+
+        Camera.getPicture(options).then((result) => {
+            if(this.activeSlide!=null)
+            {
+                this.images.push({url:result,slideIndex:this.activeSlide});
+            }
+          },err=>{
+            console.log("Failed")
+        });
+    }
+
     pickImage()
     {
-        console.log(this.isDevice);
 
-        // this.platform.ready().then(() =>{
-        //   this.isDevice = true;
-        // });
         if(this.activeSlide!=null)
         {
             console.log(this.images);
@@ -204,29 +235,39 @@ export class NewProjectPage implements OnInit{
 
         if(!this.platform.is("mobileweb"))
         {
-          ImagePicker.hasReadPermission().then(result=>{
-            if(!result)
-            {
-              ImagePicker.requestReadPermission();
-            }
-          });
-          ImagePicker.getPictures(this.options).then((results) => {
-            for (var i = 0; i < results.length; i++) {
-              console.log('Image URI: ' + results[i]);
-                if(this.activeSlide!=null)
-                {
-                    if (this.platform.is('android')) {
-                        this.images.push({url:results[i],slideIndex:this.activeSlide});
-                    }
-                    else
-                    {
-                        this.images.push({url:results[i],slideIndex:this.activeSlide});
-                    }
+            let i = Math.floor((Math.random()*4)+1);
+            let url = 'assets/images/image'+i+'.jpg';
 
-                    console.log(this.images);
-                }
+            if(this.activeSlide!=null)
+            {
+                this.images.push({url:url,slideIndex:this.activeSlide});
+                console.log(this.images);
             }
-          }, (err) => { });
+            // ImagePicker.hasReadPermission().then(result=>{
+            //   if(!result)
+            //   {
+            //     ImagePicker.requestReadPermission();
+            //   }
+            // });
+
+            //   ImagePicker.getPictures(this.options).then((results) => {
+            //     for (let i = 0; i < results.length; i++) {
+            //       console.log('Image URI: ' + results[i]);
+            //         if(this.activeSlide!=null)
+            //         {
+            //             if (this.platform.is('android')) {
+            //                 this.images.push({url:results[i],slideIndex:this.activeSlide});
+            //             }
+            //             else
+            //             {
+            //                 this.images.push({url:results[i],slideIndex:this.activeSlide});
+            //             }
+            //
+            //             console.log(this.images);
+            //         }
+            //     }
+            //   }, (err) => { });
+            // }
         }
         else
         {
